@@ -1,53 +1,144 @@
-import {StatusBar} from 'expo-status-bar';
-import React from 'react';
-import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, {useState} from "react";
+import {View, StatusBar, FlatList} from "react-native";
+import styled from "styled-components";
+import AddInput from "./Components/AddInput";
+import TodoList from "./Components/TodoList";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
+import Empty from "./Components/Empty";
+import Header from "./Components/Header";
+import login from './Components/login';
+import {NavigationContainer} from "@react-navigation/native";
+import {createStackNavigator} from '@react-navigation/stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-export default class App extends React.Component {
+const TodoStack = createStackNavigator();
+const LoginStack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
-    constructor() {
-        super();
-        this.state = {
-            input: ''
-        }
-    }
+const TodoStackScreen = ({navigation}) => {
+    return (
+        <TodoStack.Navigator screenOptions={{
+            headerStyle: {
+                backgroundColor: '#10104CFF'
+            },
+            headerTintColor: '#fff',
+            headerTintStyle: {
+                fontWeight: 'bold'
+            }
+        }}>
+            <TodoStack.Screen name="To-Do list" component={todo} options={{
+                headerLeft: () => (
+                    <Icon.Button name='ios-menu' size={25} backgroundColor='#10104CFF' onPress={() => navigation.openDrawer()}></Icon.Button>)
+            }}/>
+        </TodoStack.Navigator>
+    )
+}
 
-    handlePress = () => {
-        alert('welcome button');
-    }
-    setInput = (newInput) => this.setState({input: newInput})
-    pressText = () => alert('welcome ' + this.state.input);
+const LoginStackScreen = ({navigation}) => {
+    return (
+        <LoginStack.Navigator screenOptions={{
+            headerStyle: {
+                backgroundColor: '#10104CFF'
+            },
+            headerTintColor: '#fff',
+            headerTintStyle: {
+                fontWeight: 'bold'
+            }
+        }}>
+            <LoginStack.Screen name="Login" component={login} options={{
+                headerLeft: () => (
+                    <Icon.Button name='ios-menu' size={25} backgroundColor='#10104CFF' onPress={() => navigation.openDrawer()}></Icon.Button>)
+            }}/>
+        </LoginStack.Navigator>
+    )
+}
 
-    render() {
+
+
+const getFonts = () =>
+    Font.loadAsync({
+        "poppins-regular": require("./assets/fonts/Poppins/Poppins-Regular.ttf"),
+        "poppins-bold": require("./assets/fonts/Poppins/Poppins-Bold.ttf"),
+    });
+
+const todo = () => {
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+
+    const [data, setData] = useState([]);
+
+    const submitHandler = (value) => {
+        setData((prevTodo) => {
+            return [
+                {
+                    value: value,
+                    key: Math.random().toString(),
+                },
+                ...prevTodo,
+            ];
+        });
+    };
+
+    const deleteItem = (key) => {
+        setData((prevTodo) => {
+            return prevTodo.filter((todo) => todo.key != key);
+        });
+    };
+
+    if (fontsLoaded) {
         return (
-            <View style={styles.container}>
-                <StatusBar/>
-                <Text style={styles.text}>Abdelhay</Text>
-                <TouchableOpacity onPress={this.handlePress}><Text>welcome</Text></TouchableOpacity>
-                <TextInput defaultValue={this.state.input} inlineImageLeft='search_icon'
-                           onChangeText={this.setInput}  value={this.state.input}
-                           placeholder='type here' style={styles.input}/>
-                <Button title="Press me" onPress={this.pressText} />
-            </View>
+            <ComponentContainer>
+                <View>
+                    <StatusBar barStyle="light-content" backgroundColor="midnightblue"/>
+                </View>
+
+                <View>
+                    <FlatList
+                        data={data}
+                        ListHeaderComponent={() => <Header/>}
+                        ListEmptyComponent={() => <Empty/>}
+                        keyExtractor={(item) => item.key}
+                        renderItem={({item}) => (
+                            <TodoList item={item} deleteItem={deleteItem}/>
+                        )}
+                    />
+                    <View>
+                        <AddInput submitHandler={submitHandler}/>
+                    </View>
+                </View>
+            </ComponentContainer>
+        );
+    } else {
+        return (
+            <AppLoading
+                startAsync={getFonts}
+                onFinish={() => {
+                    setFontsLoaded(true);
+                }}
+                onError={console.warn}
+            />
         );
     }
 }
 
-const styles = StyleSheet.create(
-    {
-        container: {
-            flex: 1,
-            backgroundColor: '#fff',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        text: {
-            color: '#f5f',
-            fontSize: 30,
-        },
-        input: {
-            width: 300,
-            borderWidth: 1,
-            borderBottomColor: "#20232a",
-        }
-    }
-);
+const App = () => {
+    return (
+        <NavigationContainer>
+            <Drawer.Navigator initialRouteName="Home">
+                <Drawer.Screen name="todo" component={TodoStackScreen}/>
+                <Drawer.Screen name="login" component={LoginStackScreen}/>
+            </Drawer.Navigator>
+        </NavigationContainer>
+    );
+}
+
+export default App;
+
+const ComponentContainer = styled.View`
+  background-color: #10104c;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
