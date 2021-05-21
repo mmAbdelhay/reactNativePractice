@@ -2,11 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import axios from "axios";
 import React, {useState} from 'react';
 import { StyleSheet, Text, SafeAreaView, TextInput, TouchableOpacity,Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styled from "styled-components";
 
 export default function App({navigation}) {
 
     const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [token, setToken] = useState('');
 
@@ -14,19 +16,20 @@ export default function App({navigation}) {
         axios.post('https://reqres.in/api/login',{
             username: username,
             password: password
-        }).then(function (response) {
+        }).then(async (response) => {
             console.log(response.data.token);
             setToken(response.data.token);
+            await AsyncStorage.setItem('name',JSON.stringify(name))
             Alert.alert(
                 'Login successfully',
-                `your token is ${token} \nDo you want navigate to the todo list`,
+                `your token is ${response.data.token} \nDo you want navigate to your profile`,
                 [{
                     text: 'cancel',
                     onPress: () => console.log('canceled')
                 },
                     {
                     text: 'ok',
-                    onPress: () => navigation.navigate('todo')
+                    onPress: () => navigation.navigate('profile')
                 }
                 ]
             )
@@ -39,6 +42,8 @@ export default function App({navigation}) {
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto" />
             <HeaderText style={{fontSize: 30}}>Login page</HeaderText>
+            <Input placeholder="profile name." placeholderTextColor="#003f5c"
+                   onChangeText={(name) => setName(name)} />
             <Input placeholder="username." placeholderTextColor="#003f5c"
                        onChangeText={(username) => setUsername(username)} />
             <Input placeholder="Password." placeholderTextColor="#003f5c"
@@ -53,7 +58,7 @@ export default function App({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0b0b38',
+        backgroundColor: '#363a37',
         alignItems: 'center',
         justifyContent: 'center',
     },

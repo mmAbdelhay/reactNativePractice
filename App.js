@@ -8,6 +8,7 @@ import AppLoading from "expo-app-loading";
 import Empty from "./Components/Empty";
 import Header from "./Components/Header";
 import login from './Components/login';
+import Profile from "./Components/profile";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -15,13 +16,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const TodoStack = createStackNavigator();
 const LoginStack = createStackNavigator();
+const ProfileStack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const TodoStackScreen = ({navigation}) => {
     return (
         <TodoStack.Navigator screenOptions={{
             headerStyle: {
-                backgroundColor: '#10104CFF'
+                backgroundColor: '#1c1b1b'
             },
             headerTintColor: '#fff',
             headerTintStyle: {
@@ -30,7 +32,7 @@ const TodoStackScreen = ({navigation}) => {
         }}>
             <TodoStack.Screen name="To-Do list" component={todo} options={{
                 headerLeft: () => (
-                    <Icon.Button name='ios-menu' size={25} backgroundColor='#10104CFF' onPress={() => navigation.openDrawer()}></Icon.Button>)
+                    <Icon.Button name='ios-menu' size={25} backgroundColor='#1c1b1b' onPress={() => navigation.openDrawer()}></Icon.Button>)
             }}/>
         </TodoStack.Navigator>
     )
@@ -40,7 +42,7 @@ const LoginStackScreen = ({navigation}) => {
     return (
         <LoginStack.Navigator screenOptions={{
             headerStyle: {
-                backgroundColor: '#10104CFF'
+                backgroundColor: '#1c1b1b'
             },
             headerTintColor: '#fff',
             headerTintStyle: {
@@ -49,12 +51,30 @@ const LoginStackScreen = ({navigation}) => {
         }}>
             <LoginStack.Screen name="Login" component={login} options={{
                 headerLeft: () => (
-                    <Icon.Button name='ios-menu' size={25} backgroundColor='#10104CFF' onPress={() => navigation.openDrawer()}></Icon.Button>)
+                    <Icon.Button name='ios-menu' size={25} backgroundColor='#1c1b1b' onPress={() => navigation.openDrawer()}></Icon.Button>)
             }}/>
         </LoginStack.Navigator>
     )
 }
 
+const ProfileStackScreen = ({navigation}) => {
+    return (
+        <ProfileStack.Navigator screenOptions={{
+            headerStyle: {
+                backgroundColor: '#1c1b1b'
+            },
+            headerTintColor: '#fff',
+            headerTintStyle: {
+                fontWeight: 'bold'
+            }
+        }}>
+            <ProfileStack.Screen name="profile" component={Profile} options={{
+                headerLeft: () => (
+                    <Icon.Button name='ios-menu' size={25} backgroundColor='#1c1b1b' onPress={() => navigation.openDrawer()}></Icon.Button>)
+            }}/>
+        </ProfileStack.Navigator>
+    )
+}
 
 
 const getFonts = () =>
@@ -90,7 +110,7 @@ const todo = () => {
         return (
             <ComponentContainer>
                 <View>
-                    <StatusBar barStyle="light-content" backgroundColor="midnightblue"/>
+                    <StatusBar barStyle="light-content" backgroundColor="#1c1b1b"/>
                 </View>
 
                 <View>
@@ -128,6 +148,7 @@ const App = () => {
             <Drawer.Navigator initialRouteName="Home">
                 <Drawer.Screen name="todo" component={TodoStackScreen}/>
                 <Drawer.Screen name="login" component={LoginStackScreen}/>
+                <Drawer.Screen name="profile" component={ProfileStackScreen}/>
             </Drawer.Navigator>
         </NavigationContainer>
     );
@@ -136,7 +157,7 @@ const App = () => {
 export default App;
 
 const ComponentContainer = styled.View`
-  background-color: #10104c;
+  background-color: #363a37;
   height: 100%;
   flex-direction: column;
   align-items: center;
